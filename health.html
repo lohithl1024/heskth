@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health - Monthly Fitness Tracker</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 30px 90px rgba(0,0,0,0.3);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '💪✨🏋️‍♀️🧘‍♂️';
+            position: absolute;
+            font-size: 4em;
+            opacity: 0.1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            letter-spacing: 30px;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            animation: glow 2s ease-in-out infinite alternate;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            }
+            to {
+                text-shadow: 0 0 20px rgba(255,255,255,0.8), 2px 2px 10px rgba(0,0,0,0.2);
+            }
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+
+        .month-selector {
+            margin: 25px 0 0 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .month-selector select {
+            padding: 12px 25px;
+            border-radius: 15px;
+            border: none;
+            background: rgba(255,255,255,0.25);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .month-selector select:hover {
+            background: rgba(255,255,255,0.35);
+            transform: translateY(-2px);
+        }
+
+        .month-selector select option {
+            background: #667eea;
+            color: white;
+        }
+
+        .main-content {
+            padding: 40px;
+            background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.2);
+        }
+
+        .section-title {
+            font-size: 2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 700;
+        }
+
+        .icon {
+            font-size: 1.4em;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .activity {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        .activity:hover {
+            border-color: #667eea;
+            transform: scale(1.01);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .activity-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .activity-icon {
+            font-size: 1.3em;
+        }
+
+        .frequency {
+            font-size: 0.9em;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .day-box {
+            aspect-ratio: 1;
+            border: 3px solid #e9ecef;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            color: #495057;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scale(0);
+            transition: transform 0.3s ease;
+            border-radius: 12px;
+            z-index: 0;
+        }
+
+        .day-box span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .day-box:hover {
+            transform: scale(1.15) rotate(5deg);
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .day-box.completed {
+            color: white;
+            border-color: #667eea;
+            animation: completePop 0.5s ease;
+        }
+
+        .day-box.completed::before {
+            transform: scale(1);
+        }
+
+        .day-box.completed::after {
+            content: '✓';
+            position: absolute;
+            font-size: 0.7em;
+            top: 2px;
+            right: 4px;
+            z-index: 2;
+            color: white;
+            font-weight: bold;
+        }
+
+        @keyframes completePop {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.3);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .stat-value {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 15px 0;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.95;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .btn {
+            border: none;
+            padding: 15px 35px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: linear-gradient(135deg, #ff5252 0%, #e63946 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+            color: white;
+        }
+
+        .save-btn:hover {
+            background: linear-gradient(135deg, #40c057 0%, #2f9e44 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(81, 207, 102, 0.4);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            border-left: 5px solid #51cf66;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: #51cf66;
+        }
+
+        .progress-ring {
+            margin: 20px auto;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .days-grid {
+                grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+                gap: 8px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="notification" id="notification">
+        <strong>✓ Saved!</strong> Your progress has been saved successfully.
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🌟 HEALTH 🌟</h1>
+            <p class="subtitle">Your Journey to Wellness & Strength</p>
+            <div class="month-selector">
+                <select id="monthSelect">
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
+                </select>
+                <select id="yearSelect"></select>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Statistics at top -->
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-label">Overall Completion</div>
+                    <div class="stat-value" id="overallStat">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✨</div>
+                    <div class="stat-label">Skin Care Progress</div>
+                    <div class="stat-value" id="skinStat">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💪</div>
+                    <div class="stat-label">Body Building Progress</div>
+                    <div class="stat-value" id="bodyStat">0%</div>
+                </div>
+            </div>
+
+            <!-- Skin Section -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">✨</span>Skin Care</h2>
+                
+                <div class="activity">
+                    <div class="activity-header">
+                        <span class="activity-title">
+                            <span class="activity-icon">🧘‍♀️</span>
+                            Daily Skin Care Yoga (Morning)
+                        </span>
+                        <span class="frequency">Daily</span>
+                    </div>
+                    <div class="days-grid" id="skinYoga"></div>
+                </div>
+
+                <div class="activity">
+                    <div class="activity-header">
+                        <span class="activity-title">
+                            <span class="activity-icon">🥤</span>
+                            Homemade Collagen Drink
+                        </span>
+                        <span class="frequency">Daily</span>
+                    </div>
+                    <div class="days-grid" id="collagen"></div>
+                </div>
+
+                <div class="activity">
+                    <div class="activity-header">
+                        <span class="activity-title">
+                            <span class="activity-icon">🥥</span>
+                            Coconut Water
+                        </span>
+                        <span class="frequency">3x per week</span>
+                    </div>
+                    <div class="days-grid" id="coconut"></div>
+                </div>
+            </div>
+
+            <!-- Body Building Section -->
+            <div class="section">
+                <h2 class="section-title"><span class="icon">💪</span>Body Building (Skinny to Muscular)</h2>
+                
+                <div class="activity">
+                    <div class="activity-header">
+                        <span class="activity-title">
+                            <span class="activity-icon">🏋️‍♂️</span>
+                            Gym Workout
+                        </span>
+                        <span class="frequency">Daily</span>
+                    </div>
+                    <div class="days-grid" id="gym"></div>
+                </div>
+
+                <div class="activity">
+                    <div class="activity-header">
+                        <span class="activity-title">
+                            <span class="activity-icon">🧘‍♂️</span>
+                            Muscular Yoga (with Skin Care Yoga)
+                        </span>
+                        <span class="frequency">Daily</span>
+                    </div>
+                    <div class="days-grid" id="muscleYoga"></div>
+                </div>
+
+                <div class="activity">
+                    <div class="activity-header">
+                        <span class="activity-title">
+                            <span class="activity-icon">🍽️</span>
+                            2000 Calorie Diet
+                        </span>
+                        <span class="frequency">Daily</span>
+                    </div>
+                    <div class="days-grid" id="calories"></div>
+                </div>
+
+                <div class="activity">
+                    <div class="activity-header">
+                        <span class="activity-title">
+                            <span class="activity-icon">📏</span>
+                            Height Gain Exercise (3 Months)
+                        </span>
+                        <span class="frequency">Daily</span>
+                    </div>
+                    <div class="days-grid" id="height"></div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn save-btn" onclick="saveData()">💾 Save Progress</button>
+                <button class="btn reset-btn" onclick="resetMonth()">🔄 Reset Month</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const activities = {
+            skinYoga: { daily: true },
+            collagen: { daily: true },
+            coconut: { weekly: 3 },
+            gym: { daily: true },
+            muscleYoga: { daily: true },
+            calories: { daily: true },
+            height: { daily: true }
+        };
+
+        let trackerData = {};
+        let currentYear, currentMonth;
+
+        function getDaysInMonth(year, month) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+
+        function getStorageKey(year, month) {
+            return `fitness_tracker_${year}_${month}`;
+        }
+
+        function loadData(year, month) {
+            const key = getStorageKey(year, month);
+            if (!window.fitnessData) {
+                window.fitnessData = {};
+            }
+            return window.fitnessData[key] || {};
+        }
+
+        function saveDataToMemory(year, month, data) {
+            const key = getStorageKey(year, month);
+            if (!window.fitnessData) {
+                window.fitnessData = {};
+            }
+            window.fitnessData[key] = JSON.parse(JSON.stringify(data));
+        }
+
+        function initializeMonth() {
+            const monthSelect = document.getElementById('monthSelect');
+            const yearSelect = document.getElementById('yearSelect');
+            currentYear = parseInt(yearSelect.value);
+            currentMonth = parseInt(monthSelect.value);
+
+            trackerData = loadData(currentYear, currentMonth);
+
+            const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+
+            Object.keys(activities).forEach(activityId => {
+                const container = document.getElementById(activityId);
+                container.innerHTML = '';
+
+                if (!trackerData[activityId]) {
+                    trackerData[activityId] = {};
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayBox = document.createElement('div');
+                    dayBox.className = 'day-box';
+                    const daySpan = document.createElement('span');
+                    daySpan.textContent = day;
+                    dayBox.appendChild(daySpan);
+                    dayBox.dataset.day = day;
+
+                    if (trackerData[activityId][day]) {
+                        dayBox.classList.add('completed');
+                    }
+
+                    dayBox.addEventListener('click', () => toggleDay(activityId, day));
+                    container.appendChild(dayBox);
+                }
+            });
+
+            updateStats();
+        }
+
+        function toggleDay(activityId, day) {
+            if (trackerData[activityId][day]) {
+                delete trackerData[activityId][day];
+            } else {
+                trackerData[activityId][day] = true;
+            }
+
+            const dayBox = document.querySelector(`#${activityId} .day-box[data-day="${day}"]`);
+            dayBox.classList.toggle('completed');
+
+            updateStats();
+        }
+
+        function updateStats() {
+            const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+            
+            let skinTotal = 0, skinCompleted = 0;
+            let bodyTotal = 0, bodyCompleted = 0;
+
+            ['skinYoga', 'collagen', 'coconut'].forEach(id => {
+                const target = id === 'coconut' ? 12 : daysInMonth;
+                skinTotal += target;
+                skinCompleted += Object.keys(trackerData[id] || {}).length;
+            });
+
+            ['gym', 'muscleYoga', 'calories', 'height'].forEach(id => {
+                bodyTotal += daysInMonth;
+                bodyCompleted += Object.keys(trackerData[id] || {}).length;
+            });
+
+            const overallTotal = skinTotal + bodyTotal;
+            const overallCompleted = skinCompleted + bodyCompleted;
+
+            document.getElementById('skinStat').textContent = 
+                Math.round((skinCompleted / skinTotal) * 100) + '%';
+            document.getElementById('bodyStat').textContent = 
+                Math.round((bodyCompleted / bodyTotal) * 100) + '%';
+            document.getElementById('overallStat').textContent = 
+                Math.round((overallCompleted / overallTotal) * 100) + '%';
+        }
+
+        function saveData() {
+            saveDataToMemory(currentYear, currentMonth, trackerData);
+            showNotification('✓ Progress saved successfully!');
+        }
+
+        function resetMonth() {
+            if (confirm('Are you sure you want to reset all data for this month? This cannot be undone!')) {
+                trackerData = {};
+                saveDataToMemory(currentYear, currentMonth, trackerData);
+                initializeMonth();
+                showNotification('🔄 Month reset successfully!');
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.innerHTML = '<strong>' + message + '</strong>';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize year selector
+        const yearSelect = document.getElementById('yearSelect');
+        const currentDate = new Date();
+        const thisYear = currentDate.getFullYear();
+        for (let year = thisYear - 1; year <= thisYear + 2; year++) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            if (year === thisYear) option.selected = true;
+            yearSelect.appendChild(option);
+        }
+
+        // Set current month
+        document.getElementById('monthSelect').value = currentDate.getMonth();
+
+        // Event listeners
+        document.getElementById('monthSelect').addEventListener('change', initializeMonth);
+        document.getElementById('yearSelect').addEventListener('change', initializeMonth);
+
+        // Auto-save every 30 seconds
+        setInterval(() => {
+            saveDataToMemory(currentYear, currentMonth, trackerData);
+        }, 30000);
+
+        // Initialize on load
+        initializeMonth();
+    </script>
+</body>
+</html>
